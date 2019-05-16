@@ -63,10 +63,11 @@ if (Serial1.available() > 0)
  } 
  else if (bt == 'I')    //forward right 
  { 
+   
    digitalWrite(outPin1,HIGH); 
    digitalWrite(outPin2,LOW); 
-   digitalWrite(outPin3,LOW); 
-   digitalWrite(outPin4,HIGH); 
+   digitalWrite(outPin3,HIGH); 
+   digitalWrite(outPin4,LOW); 
  } 
  else if (bt == 'G')    //forward left 
  { 
@@ -78,8 +79,8 @@ if (Serial1.available() > 0)
  else if (bt == 'H') {  // back left
     digitalWrite(outPin1,LOW); 
    digitalWrite(outPin2,HIGH); 
-   digitalWrite(outPin3,HIGH); 
-   digitalWrite(outPin4,LOW); 
+   digitalWrite(outPin3,LOW); 
+   digitalWrite(outPin4,HIGH); 
   }
   else if (bt == 'J') {  // back right
     
