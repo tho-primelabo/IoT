@@ -31,18 +31,18 @@ void loop()
     /*________________________________________________________________________*/ 
    if(bt == 'F')        //move forwards 
    { 
-     digitalWrite(outPin3,HIGH); 
+     //digitalWrite(outPin3,HIGH); 
      digitalWrite(outPin1,LOW); 
-     digitalWrite(outPin2,LOW); 
+     digitalWrite(outPin2,HIGH); 
      digitalWrite(led4,HIGH); 
      digitalWrite(outPin4,LOW); 
    } 
    else if (bt == 'B')       //move backwards 
    { 
-     digitalWrite(outPin1,LOW); 
+     digitalWrite(outPin1,HIGH); 
      digitalWrite(outPin2,LOW); 
      digitalWrite(outPin3,LOW); 
-     digitalWrite(outPin4,HIGH); 
+     digitalWrite(outPin4,LOW); 
       
    } 
    else if (bt == 'S')     //stop!! 
@@ -56,16 +56,16 @@ void loop()
    } 
    else if (bt == 'R')    //right 
    { 
-     digitalWrite(outPin1,HIGH); 
+     digitalWrite(outPin4,HIGH); 
      digitalWrite(outPin2,LOW); 
      digitalWrite(outPin3,LOW); 
-     digitalWrite(outPin4,LOW); 
+     digitalWrite(outPin1,LOW); 
    } 
    else if (bt == 'L')     //left 
    { 
      digitalWrite(outPin1,LOW); 
-     digitalWrite(outPin3,LOW); 
-     digitalWrite(outPin2,HIGH); 
+     digitalWrite(outPin3,HIGH); 
+     digitalWrite(outPin2,LOW); 
      digitalWrite(outPin4,LOW); 
    } 
    else if (bt == 'I')    //forward right 
