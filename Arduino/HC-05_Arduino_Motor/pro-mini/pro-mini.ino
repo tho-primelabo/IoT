@@ -2,9 +2,9 @@
 
 SoftwareSerial mySerial(11,10);
 int led = 13;        //led 
-int led4 = 4;        //led 4
+int outPin2 = 4;        //led 4
 int outPin1 = 5;     //motor1 pwm R
-int outPin2 = 12;    //motor1 L
+int led4 = 12;    //motor1 L
 int outPin4 = 9;   //motor2 pwm B
 int outPin3 = 7;   //motor2 F
 char bt = ' ';
