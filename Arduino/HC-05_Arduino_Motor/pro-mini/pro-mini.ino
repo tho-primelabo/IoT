@@ -41,6 +41,7 @@ void loop()
         analogWrite(Motor_A_Enable, speedCar);
        digitalWrite(outPin1,LOW); 
        digitalWrite(outPin2,HIGH); 
+        digitalWrite(outPin3,LOW); 
        digitalWrite(led4,HIGH); 
        digitalWrite(outPin4,LOW); 
        break;
@@ -113,8 +114,8 @@ void loop()
         analogWrite(Motor_A_Enable, speedCar);
         digitalWrite(outPin1,LOW); 
        digitalWrite(outPin2,HIGH); 
-       digitalWrite(outPin3,LOW); 
-       digitalWrite(outPin4,HIGH); 
+       digitalWrite(outPin3,HIGH); 
+       digitalWrite(outPin4,LOW); 
        break;
       }
       case 'J': {  // back right
