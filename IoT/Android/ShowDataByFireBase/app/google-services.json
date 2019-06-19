@@ -1,0 +1,85 @@
+{
+  "project_info": {
+    "project_number": "260852293200",
+    "firebase_url": "https://winged-bliss-237302.firebaseio.com",
+    "project_id": "winged-bliss-237302",
+    "storage_bucket": "winged-bliss-237302.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:260852293200:android:7d4c36c4be5e0ca0",
+        "android_client_info": {
+          "package_name": "com.example.showdatabyfirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "260852293200-gjtg3j2av7coto9ona4iqqs63nsv2kvh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.showdatabyfirebase",
+            "certificate_hash": "d1176956e187b5d42888a69a12f501ceb95c9e3a"
+          }
+        },
+        {
+          "client_id": "260852293200-1s7cg1ocpvcofqsuqotuqq3dsqb2brih.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGZxyGkJkAXW5C1UvFKDskaKPKcRALCGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "260852293200-1s7cg1ocpvcofqsuqotuqq3dsqb2brih.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:260852293200:android:5e8288ea1628a827",
+        "android_client_info": {
+          "package_name": "thole.iot.LEDControl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "260852293200-a1s6qj4ivjoisf2n86s1kcchc213cqlp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "thole.iot.LEDControl",
+            "certificate_hash": "d1176956e187b5d42888a69a12f501ceb95c9e3a"
+          }
+        },
+        {
+          "client_id": "260852293200-1s7cg1ocpvcofqsuqotuqq3dsqb2brih.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGZxyGkJkAXW5C1UvFKDskaKPKcRALCGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "260852293200-1s7cg1ocpvcofqsuqotuqq3dsqb2brih.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context="thole.iot.LEDControl.MainActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_height="58dp"
+        android:layout_column="2"
+        android:layout_columnSpan="1"
+
+        android:paddingLeft="0dp"
+        android:paddingTop="15dp"
+        android:text="IoT Controll Environment"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/on"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_row="1"
+        android:layout_column="2"
+
+        android:layout_marginLeft="20dp"
+        android:text="ON" />
+
+    <Button
+        android:id="@+id/off"
+
+        android:layout_width="125dp"
+
+        android:layout_height="wrap_content"
+        android:layout_row="1"
+
+        android:layout_column="3"
+        android:text="OFF" />
+
+    <TextView
+        android:id="@+id/humidity"
+
+        android:layout_height="wrap_content"
+
+        android:layout_row="3"
+        android:layout_column="2"
+
+       android:layout_marginLeft="20dp"
+        android:text="Humidity:"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/temperature"
+
+        android:layout_width="180dp"
+
+
+        android:layout_height="wrap_content"
+
+        android:layout_column="3"
+        android:text="Temperature:"
+        android:textSize="20sp" />
+
+
+</GridLayout>
