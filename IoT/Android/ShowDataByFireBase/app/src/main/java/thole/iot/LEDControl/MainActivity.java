@@ -26,8 +26,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button on;
-    private Button off;
+    private Button on, on3, on4, on5;
+    private Button off, off3, off4, off5;
     private TextView txtHumidity;
     private TextView txtTemperature;
     private DatabaseReference dref;
@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private String temperature;
     //private NetworkInfo mWifi;
     private WifiManager wifiManager;
+    private IntentFilter intentFilter;
     String CONNECTIVITY_CHANGE = "android.net.conn.CONNECTIVITY_CHANGE";
 
     public static NetworkInfo getNetworkInfo(Context context) {
@@ -52,10 +53,16 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null ) {
             getSupportActionBar().hide();
         };
-        LinearLayout mlayout = new LinearLayout(getApplicationContext());
-        mlayout.setOrientation(LinearLayout.VERTICAL);
+//        LinearLayout mlayout = new LinearLayout(getApplicationContext());
+//        mlayout.setOrientation(LinearLayout.VERTICAL);
         on = (Button) findViewById(R.id.on);
         off = (Button) findViewById(R.id.off);
+        on3 = (Button) findViewById(R.id.on2);
+        off3 = (Button) findViewById(R.id.off2);
+        on4 = (Button) findViewById(R.id.on3);
+        off4 = (Button) findViewById(R.id.off3);
+        on5 = (Button) findViewById(R.id.on4);
+        off5 = (Button) findViewById(R.id.off4);
         txtHumidity = (TextView) findViewById(R.id.humidity);
         txtTemperature = (TextView) findViewById(R.id.temperature);
         dref = FirebaseDatabase.getInstance().getReference();
@@ -78,9 +85,9 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        IntentFilter intentFilter = new IntentFilter();
+        intentFilter = new IntentFilter();
         intentFilter.addAction(CONNECTIVITY_CHANGE);
-        getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
+       // getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
        /* boolean success = wifiManager.startScan();
         if (!success) {
             on.setEnabled(true);
@@ -117,7 +124,109 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        on4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("LED_STATUS4");
+                if (wifiManager != null && wifiManager.isWifiEnabled()) {
+                    myRef.setValue(1);
+                } else {
+                    Toast.makeText(getApplication(), "Wifi not available!",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        off4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("LED_STATUS4");
+                if (wifiManager != null && wifiManager.isWifiEnabled()) {
+                    myRef.setValue(0);
+                } else {
+                    Toast.makeText(getApplication(), "Wifi not available!",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        on3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("LED_STATUS3");
+                if (wifiManager != null && wifiManager.isWifiEnabled()) {
+                    myRef.setValue(1);
+                } else {
+                    Toast.makeText(getApplication(), "Wifi not available!",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        off3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("LED_STATUS3");
+                if (wifiManager != null && wifiManager.isWifiEnabled()) {
+                    myRef.setValue(0);
+                } else {
+                    Toast.makeText(getApplication(), "Wifi not available!",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        on5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("LED_STATUS5");
+                if (wifiManager != null && wifiManager.isWifiEnabled()) {
+                    myRef.setValue(1);
+                } else {
+                    Toast.makeText(getApplication(), "Wifi not available!",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        off5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("LED_STATUS5");
+                if (wifiManager != null && wifiManager.isWifiEnabled()) {
+                    myRef.setValue(0);
+                } else {
+                    Toast.makeText(getApplication(), "Wifi not available!",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+//        getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+//        getApplicationContext().unregisterReceiver(wifiScanReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        getApplicationContext().unregisterReceiver(wifiScanReceiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
     }
 
     BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
@@ -125,16 +234,28 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context c, Intent intent) {
             Log.d("thole", "onReceive:" + intent.getAction());
             if (intent.getAction().equals(CONNECTIVITY_CHANGE)) {
-                NetworkInfo info = getNetworkInfo(MainActivity.this);
+                NetworkInfo info = getNetworkInfo(getApplicationContext());
                 if (info != null && info.isConnected()) {
                     on.setEnabled(true);
                     off.setEnabled(true);
+                    on3.setEnabled(true);
+                    off3.setEnabled(true);
+                    on4.setEnabled(true);
+                    off4.setEnabled(true);
+                    on5.setEnabled(true);
+                    off5.setEnabled(true);
                     Log.d("thole", "ON");
                     txtTemperature.setEnabled(true);
                     txtHumidity.setEnabled(true);
                 } else {
                     on.setEnabled(false);
                     off.setEnabled(false);
+                    on3.setEnabled(false);
+                    off3.setEnabled(false);
+                    on4.setEnabled(false);
+                    off4.setEnabled(false);
+                    on5.setEnabled(false);
+                    off5.setEnabled(false);
                     txtHumidity.setEnabled(false);
                     txtTemperature.setEnabled(false);
                     Log.d("thole", "OFF");
