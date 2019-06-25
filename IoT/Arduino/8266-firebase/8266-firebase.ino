@@ -1,11 +1,15 @@
 #include <ESP8266WiFi.h>
 
 #include <FirebaseArduino.h>
+#include <TM1637Display.h>
+//#include <RTClib.h>
+//#include <Wire.h>
 
 #define WIFI_SSID "MobileZone"
 #define WIFI_PASSWORD "KFC@2018"
 #define FIREBASE_HOST "winged-bliss-237302.firebaseio.com"
 #define FIREBASE_AUTH "qXwFALB50knO5W4lXOp5jWqIkoNu7lLRufz6HTja"
+
 
 #define LED5 D5
 #define LED1 D1
@@ -21,18 +25,22 @@
 #define DHTTYPE DHT11 
 #define DHTPIN D2     // D2
 DHT dht(DHTPIN, DHTTYPE);
+TM1637Display display(LED5,LED6);
+long numCounter = 0;
 
 void setup() {
-
+  
+  display.setBrightness(0xA);
+  //display.setColon(true);
   pinMode(LED1,OUTPUT);  
   pinMode(LED3,OUTPUT);  
   pinMode(LED4,OUTPUT);
-  pinMode(LED5,OUTPUT);
-  pinMode(LED6,OUTPUT);  
+  //pinMode(LED5,OUTPUT);
+  //pinMode(LED6,OUTPUT);  
   pinMode(LED7,OUTPUT);
   pinMode(LED8,OUTPUT);  
   pinMode(LED9,OUTPUT); 
-   pinMode(LED10,OUTPUT);  
+  pinMode(LED10,OUTPUT);  
   Serial.begin(9600);
   
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -95,23 +103,23 @@ void loop() {
    digitalWrite(LED4,LOW);   
   }
 
-   if(Firebase.getInt("LED_STATUS5") == 1)  
-  {  
-    digitalWrite(LED5,HIGH);     
-  }  
-  else  
-  {  
-   digitalWrite(LED5,LOW);   
-  }
-
-   if(Firebase.getInt("LED_STATUS6") == 1)  
-  {  
-    digitalWrite(LED6,HIGH);     
-  }  
-  else  
-  {  
-   digitalWrite(LED6,LOW);   
-  }
+//   if(Firebase.getInt("LED_STATUS5") == 1)  
+//  {  
+//    digitalWrite(LED5,HIGH);     
+//  }  
+//  else  
+//  {  
+//   digitalWrite(LED5,LOW);   
+//  }
+//
+//   if(Firebase.getInt("LED_STATUS6") == 1)  
+//  {  
+//    digitalWrite(LED6,HIGH);     
+//  }  
+//  else  
+//  {  
+//   digitalWrite(LED6,LOW);   
+//  }
    if(Firebase.getInt("LED_STATUS7") == 1)  
   {  
     digitalWrite(LED7,HIGH);     
@@ -165,7 +173,12 @@ void loop() {
   }
    Firebase.setFloat("Humidity", h);
    Firebase.setFloat("Temperature", t);
-  
+
+//  for(numCounter = 0; numCounter < 1000; numCounter++) //Iterate numCounter
+//   {
+//   display.showNumberDec(numCounter); //Display the numCounter value;
+//   delay(500);
+//   }
   
   delay(1000);
 
