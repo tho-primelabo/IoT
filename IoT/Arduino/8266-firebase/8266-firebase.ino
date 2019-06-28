@@ -5,8 +5,8 @@
 //#include <RTClib.h>
 //#include <Wire.h>
 
-#define WIFI_SSID "MobileZone"
-#define WIFI_PASSWORD "KFC@2018"
+#define WIFI_SSID "thole"
+#define WIFI_PASSWORD "khongchopass1357"
 #define FIREBASE_HOST "winged-bliss-237302.firebaseio.com"
 #define FIREBASE_AUTH "qXwFALB50knO5W4lXOp5jWqIkoNu7lLRufz6HTja"
 
@@ -43,27 +43,19 @@ void setup() {
   pinMode(LED10,OUTPUT);  
   Serial.begin(9600);
   
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);  
   Serial.print("connecting");
   
-  while (WiFi.status() != WL_CONNECTED) {
-  
-  Serial.print(".");
-  
+  while (WiFi.status() != WL_CONNECTED) {  
+  Serial.print(".");  
   delay(500);
-  dht.begin();
-  
-  }
-  
-  Serial.println();
-  
-  Serial.print("connected: ");
-  
+  dht.begin();  
+  }  
+  Serial.println();  
+  Serial.print("connected: ");  
   Serial.println(WiFi.localIP());
   
-  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-  
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);  
   Firebase.setInt("LED_STATUS",0);
   Firebase.setInt("LED_STATUS3",0);
   Firebase.setInt("LED_STATUS4",0);
@@ -77,8 +69,7 @@ void setup() {
 }
 
 void loop() {
-
-
+  
   if(Firebase.getInt("LED_STATUS") == 1)  
   {  
     digitalWrite(LED1,HIGH);     
@@ -102,7 +93,6 @@ void loop() {
   {  
    digitalWrite(LED4,LOW);   
   }
-
 //   if(Firebase.getInt("LED_STATUS5") == 1)  
 //  {  
 //    digitalWrite(LED5,HIGH);     
@@ -144,13 +134,14 @@ void loop() {
   {  
    digitalWrite(LED9,LOW);   
   }
-   if(Firebase.getInt("LED_STATUS10") == 1)  
-  {  
-    digitalWrite(LED10,HIGH);     
-  }  
-  else  
-  {  
-   digitalWrite(LED10,LOW);   
+  if(digitalRead(LED8)==HIGH) {
+    Serial.println("Movement detected.");
+    digitalWrite(LED8,HIGH);
+    Firebase.setInt("LED_STATUS10",1);
+  } else {
+    Serial.println("Did not detect movement.");
+     digitalWrite(LED8,LOW);
+     Firebase.setInt("LED_STATUS10",0);
   }
   if (Firebase.failed()) { // Check for errors 
   
@@ -178,8 +169,6 @@ void loop() {
 //   {
 //   display.showNumberDec(numCounter); //Display the numCounter value;
 //   delay(500);
-//   }
-  
+//   }  
   delay(1000);
-
 }

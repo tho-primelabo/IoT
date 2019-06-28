@@ -4,10 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,9 +54,10 @@ public class MainActivity extends AppCompatActivity {
         //FirebaseApp.initializeApp(this);
         setContentView(R.layout.layout2);
 
-        if (getSupportActionBar() != null ) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
-        };
+        }
+        ;
 //        LinearLayout mlayout = new LinearLayout(getApplicationContext());
 //        mlayout.setOrientation(LinearLayout.VERTICAL);
         on = (Button) findViewById(R.id.on);
@@ -69,25 +74,105 @@ public class MainActivity extends AppCompatActivity {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         //mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
+//        dref.child("Humidity").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                Log.d("MyApp", "Humidity");
+//                if (dataSnapshot.child("Humidity").getValue() != null) {
+//                    humidity = dataSnapshot.child("Humidity").getValue().toString();
+//                    txtHumidity.setText("Humidity: " + humidity + " %");
+//                    txtHumidity.setTextColor(Color.RED);
+//                    new Handler().postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            txtTemperature.setTextColor(Color.DKGRAY);
+//                            txtHumidity.setTextColor(Color.DKGRAY);
+//                        }
+//                    }, 3000);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
-        dref.addValueEventListener(new ValueEventListener() {
+        dref.child("Temperature").addValueEventListener(new ValueEventListener() {
             @Override
-
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                humidity = dataSnapshot.child("Humidity").getValue().toString();
-                txtHumidity.setText("Humidity: " + humidity + " %");
-                temperature = dataSnapshot.child("Temperature").getValue().toString();
-                txtTemperature.setText("Temp: " + temperature + " *C");
-            }
+                Log.d("MyApp", "Temperature");
+                txtTemperature.setTextColor(Color.GREEN);
+                new Handler().postDelayed(new Runnable() {@Override
+                public void run() {
+                    //txtTemperature.setTextColor(Color.DKGRAY);
+                    txtTemperature.setTextColor(Color.BLACK);
+                }
+                },3000);
 
+            }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
+
+        dref.child("Humidity").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d("MyApp", "LED_STATUS4");
+                txtHumidity.setTextColor(Color.GREEN);
+                new Handler().postDelayed(new Runnable() {@Override
+                public void run() {
+                    //txtTemperature.setTextColor(Color.DKGRAY);
+                    txtHumidity.setTextColor(Color.BLACK);
+                }
+                },3000);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        dref.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d("MyApp", dataSnapshot.getValue().toString());
+                humidity = dataSnapshot.child("Humidity").getValue().toString();
+                txtHumidity.setText("Humidity: " + humidity + " %");
+                //txtHumidity.setTextColor(Color.RED);
+                temperature = dataSnapshot.child("Temperature").getValue().toString();
+                txtTemperature.setText("Temp: " + temperature + (char) 0x00B0 + "C");
+                //txtTemperature.setTextColor(Color.RED);
+
+
+                //MyApp myApp = (MyApp) getApplication();
+
+                Log.d("MyApp", "isStop:"+isStop);
+                if (MyApp.isInBackground) {
+                    Log.d("MyApp", "test test");
+//                    finish();
+//                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+//                    if (launchIntent != null) {
+//                        startActivity(launchIntent);//null pointer check in case package name was not found
+//                    }
+//                    startActivity(getIntent());
+                }
+               // myApp.showMessage();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+
+        });
+
         intentFilter = new IntentFilter();
         intentFilter.addAction(CONNECTIVITY_CHANGE);
-       // getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
+        // getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
        /* boolean success = wifiManager.startScan();
         if (!success) {
             on.setEnabled(true);
@@ -211,10 +296,23 @@ public class MainActivity extends AppCompatActivity {
 //        getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
     }
 
+    private boolean isStop;
+
     @Override
     protected void onStop() {
         super.onStop();
+        isStop = true;
 //        getApplicationContext().unregisterReceiver(wifiScanReceiver);
+
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Intent launchIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+//                if (launchIntent != null) {
+//                    startActivity(launchIntent);//null pointer check in case package name was not found
+//                }
+//            }
+//        },3000);
     }
 
     @Override
@@ -226,7 +324,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        isStop=false;
         //getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
+        //MyApp myApp = (MyApp) this.getApplication();
     }
 
     BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
