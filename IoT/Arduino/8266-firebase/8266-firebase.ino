@@ -1,15 +1,11 @@
 #include <ESP8266WiFi.h>
 
 #include <FirebaseArduino.h>
-#include <TM1637Display.h>
-//#include <RTClib.h>
-//#include <Wire.h>
 
-#define WIFI_SSID "thole"
-#define WIFI_PASSWORD "khongchopass1357"
+#define WIFI_SSID "MobileZone"
+#define WIFI_PASSWORD "KFC@2018"
 #define FIREBASE_HOST "winged-bliss-237302.firebaseio.com"
 #define FIREBASE_AUTH "qXwFALB50knO5W4lXOp5jWqIkoNu7lLRufz6HTja"
-
 
 #define LED5 D5
 #define LED1 D1
@@ -25,37 +21,41 @@
 #define DHTTYPE DHT11 
 #define DHTPIN D2     // D2
 DHT dht(DHTPIN, DHTTYPE);
-TM1637Display display(LED5,LED6);
-long numCounter = 0;
 
 void setup() {
-  
-  display.setBrightness(0xA);
-  //display.setColon(true);
+
   pinMode(LED1,OUTPUT);  
   pinMode(LED3,OUTPUT);  
   pinMode(LED4,OUTPUT);
-  //pinMode(LED5,OUTPUT);
-  //pinMode(LED6,OUTPUT);  
+  pinMode(LED5,OUTPUT);
+  pinMode(LED6,OUTPUT);  
   pinMode(LED7,OUTPUT);
   pinMode(LED8,OUTPUT);  
   pinMode(LED9,OUTPUT); 
-  pinMode(LED10,OUTPUT);  
+   pinMode(LED10,OUTPUT);  
   Serial.begin(9600);
   
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);  
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  
   Serial.print("connecting");
   
-  while (WiFi.status() != WL_CONNECTED) {  
-  Serial.print(".");  
+  while (WiFi.status() != WL_CONNECTED) {
+  
+  Serial.print(".");
+  
   delay(500);
-  dht.begin();  
-  }  
-  Serial.println();  
-  Serial.print("connected: ");  
+  dht.begin();
+  
+  }
+  
+  Serial.println();
+  
+  Serial.print("connected: ");
+  
   Serial.println(WiFi.localIP());
   
-  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);  
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+  
   Firebase.setInt("LED_STATUS",0);
   Firebase.setInt("LED_STATUS3",0);
   Firebase.setInt("LED_STATUS4",0);
@@ -69,7 +69,8 @@ void setup() {
 }
 
 void loop() {
-  
+
+
   if(Firebase.getInt("LED_STATUS") == 1)  
   {  
     digitalWrite(LED1,HIGH);     
@@ -93,23 +94,24 @@ void loop() {
   {  
    digitalWrite(LED4,LOW);   
   }
-//   if(Firebase.getInt("LED_STATUS5") == 1)  
-//  {  
-//    digitalWrite(LED5,HIGH);     
-//  }  
-//  else  
-//  {  
-//   digitalWrite(LED5,LOW);   
-//  }
-//
-//   if(Firebase.getInt("LED_STATUS6") == 1)  
-//  {  
-//    digitalWrite(LED6,HIGH);     
-//  }  
-//  else  
-//  {  
-//   digitalWrite(LED6,LOW);   
-//  }
+
+   if(Firebase.getInt("LED_STATUS5") == 1)  
+  {  
+    digitalWrite(LED5,HIGH);     
+  }  
+  else  
+  {  
+   digitalWrite(LED5,LOW);   
+  }
+
+   if(Firebase.getInt("LED_STATUS6") == 1)  
+  {  
+    digitalWrite(LED6,HIGH);     
+  }  
+  else  
+  {  
+   digitalWrite(LED6,LOW);   
+  }
    if(Firebase.getInt("LED_STATUS7") == 1)  
   {  
     digitalWrite(LED7,HIGH);     
@@ -134,14 +136,13 @@ void loop() {
   {  
    digitalWrite(LED9,LOW);   
   }
-  if(digitalRead(LED8)==HIGH) {
-    Serial.println("Movement detected.");
-    digitalWrite(LED8,HIGH);
-    Firebase.setInt("LED_STATUS10",1);
-  } else {
-    Serial.println("Did not detect movement.");
-     digitalWrite(LED8,LOW);
-     Firebase.setInt("LED_STATUS10",0);
+   if(Firebase.getInt("LED_STATUS10") == 1)  
+  {  
+    digitalWrite(LED10,HIGH);     
+  }  
+  else  
+  {  
+   digitalWrite(LED10,LOW);   
   }
   if (Firebase.failed()) { // Check for errors 
   
@@ -162,13 +163,15 @@ void loop() {
     Serial.println("Failed to read from DHT sensor!");
     return;
   }
-   Firebase.setFloat("Humidity", h);
-   Firebase.setFloat("Temperature", t);
-
-//  for(numCounter = 0; numCounter < 1000; numCounter++) //Iterate numCounter
-//   {
-//   display.showNumberDec(numCounter); //Display the numCounter value;
-//   delay(500);
-//   }  
+  Serial.print("Humidity:");
+  Serial.println(h);
+  Serial.print("Temp:");
+  Serial.println(t);
+  if (Firebase.getInt("RealTime") == 1) {
+    Firebase.setFloat("Humidity", h);
+    Firebase.setFloat("Temperature", t);
+  }
+  
   delay(1000);
+
 }

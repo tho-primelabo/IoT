@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,9 +38,11 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference dref;
     private String humidity;
     private String temperature;
+    private TextView status1, status2, status3, status4;
     //private NetworkInfo mWifi;
     private WifiManager wifiManager;
     private IntentFilter intentFilter;
+    private CheckBox realTime;
     String CONNECTIVITY_CHANGE = "android.net.conn.CONNECTIVITY_CHANGE";
 
     public static NetworkInfo getNetworkInfo(Context context) {
@@ -58,6 +61,11 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
         ;
+        status1 = (TextView) findViewById(R.id.status1);
+        status2 = (TextView) findViewById(R.id.status2);
+        status3 = (TextView) findViewById(R.id.status3);
+        status4 = (TextView) findViewById(R.id.status4);
+        realTime = (CheckBox) findViewById(R.id.checkBox3);
 //        LinearLayout mlayout = new LinearLayout(getApplicationContext());
 //        mlayout.setOrientation(LinearLayout.VERTICAL);
         on = (Button) findViewById(R.id.on);
@@ -189,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
                 DatabaseReference myRef = database.getReference("LED_STATUS");
                 if (wifiManager != null && wifiManager.isWifiEnabled()) {
                     myRef.setValue(1);
+                    status1.setTextColor(Color.GREEN);
+
                 } else {
                     Toast.makeText(getApplication(), "Wifi not available!",
                             Toast.LENGTH_LONG).show();
@@ -202,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
                 DatabaseReference myRef = database.getReference("LED_STATUS");
                 if (wifiManager != null && wifiManager.isWifiEnabled()) {
                     myRef.setValue(0);
+                    status1.setTextColor(Color.RED);
                 } else {
                     Toast.makeText(getApplication(), "Wifi not available!",
                             Toast.LENGTH_LONG).show();
@@ -216,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
                 DatabaseReference myRef = database.getReference("LED_STATUS4");
                 if (wifiManager != null && wifiManager.isWifiEnabled()) {
                     myRef.setValue(1);
+                    status3.setTextColor(Color.GREEN);
                 } else {
                     Toast.makeText(getApplication(), "Wifi not available!",
                             Toast.LENGTH_LONG).show();
@@ -229,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
                 DatabaseReference myRef = database.getReference("LED_STATUS4");
                 if (wifiManager != null && wifiManager.isWifiEnabled()) {
                     myRef.setValue(0);
+                    status3.setTextColor(Color.RED);
                 } else {
                     Toast.makeText(getApplication(), "Wifi not available!",
                             Toast.LENGTH_LONG).show();
@@ -242,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
                 DatabaseReference myRef = database.getReference("LED_STATUS3");
                 if (wifiManager != null && wifiManager.isWifiEnabled()) {
                     myRef.setValue(1);
+                    status2.setTextColor(Color.GREEN);
                 } else {
                     Toast.makeText(getApplication(), "Wifi not available!",
                             Toast.LENGTH_LONG).show();
@@ -255,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
                 DatabaseReference myRef = database.getReference("LED_STATUS3");
                 if (wifiManager != null && wifiManager.isWifiEnabled()) {
                     myRef.setValue(0);
+                    status2.setTextColor(Color.RED);
                 } else {
                     Toast.makeText(getApplication(), "Wifi not available!",
                             Toast.LENGTH_LONG).show();
@@ -268,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
                 DatabaseReference myRef = database.getReference("LED_STATUS5");
                 if (wifiManager != null && wifiManager.isWifiEnabled()) {
                     myRef.setValue(1);
+                    status4.setTextColor(Color.GREEN);
                 } else {
                     Toast.makeText(getApplication(), "Wifi not available!",
                             Toast.LENGTH_LONG).show();
@@ -281,9 +297,23 @@ public class MainActivity extends AppCompatActivity {
                 DatabaseReference myRef = database.getReference("LED_STATUS5");
                 if (wifiManager != null && wifiManager.isWifiEnabled()) {
                     myRef.setValue(0);
+                    status4.setTextColor(Color.RED);
                 } else {
                     Toast.makeText(getApplication(), "Wifi not available!",
                             Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        realTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("RealTime");
+                if (realTime.isChecked()) {
+                    myRef.setValue(1);
+                }
+                else {
+                    myRef.setValue(0);
                 }
             }
         });
@@ -302,6 +332,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         isStop = true;
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("RealTime");
+        myRef.setValue(0);
+        realTime.setChecked(false);
 //        getApplicationContext().unregisterReceiver(wifiScanReceiver);
 
 //        new Handler().postDelayed(new Runnable() {
@@ -325,6 +359,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         isStop=false;
+        //realTime.setChecked(true);
         //getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
         //MyApp myApp = (MyApp) this.getApplication();
     }
