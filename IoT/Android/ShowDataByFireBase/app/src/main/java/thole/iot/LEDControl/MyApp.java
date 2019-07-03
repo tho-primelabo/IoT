@@ -8,27 +8,41 @@ import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MyApp extends Application implements LifecycleObserver {
     public static boolean isInBackground = false;
     @Override
     public void onCreate() {
         super.onCreate();
+        //Previous versions of Firebase
+        Firebase.setAndroidContext(this);
+
+        //Newer version of Firebase
+        if(!FirebaseApp.getApps(this).isEmpty()) {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        }
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    private void onAppBackgrounded() {
-        Log.d("MyApp", "App in background");
-        isInBackground = true;
+    public static boolean isActivityVisible() {
+        Log.d("MyApp", "isActivityVisible: " + activityVisible);
+        return activityVisible;
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    private void onAppForegrounded() {
-        Log.d("MyApp", "App in foreground");
-        isInBackground =  false;
+    public static void activityResumed() {
+        Log.d("MyApp", "activityResumed:" + activityVisible);
+        activityVisible = true;
     }
+
+    public static void activityPaused() {
+        Log.d("MyApp", "activityPaused:" + activityVisible);
+        activityVisible = false;
+    }
+
+    private static boolean activityVisible = true;
     public void showMessage() {
         Toast.makeText(getApplicationContext(), "test", Toast.LENGTH_SHORT).show();
     }

@@ -1,26 +1,42 @@
 package thole.iot.LEDControl;
 
+import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.icu.text.LocaleDisplayNames;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +44,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
+import thole.iot.service.MyFirebaseMessagingService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter intentFilter;
     private CheckBox realTime;
     String CONNECTIVITY_CHANGE = "android.net.conn.CONNECTIVITY_CHANGE";
-
+    private String TAG = "MyApp";
     public static NetworkInfo getNetworkInfo(Context context) {
         ConnectivityManager connManager = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -54,6 +74,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("MyApp","onCreate");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true);
+            setTurnScreenOn(true);
+        } else {
+            Window window = this.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+            window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+            window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            window.addFlags(WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+
+        }
         //FirebaseApp.initializeApp(this);
         setContentView(R.layout.layout2);
 
@@ -160,15 +194,15 @@ public class MainActivity extends AppCompatActivity {
                 //MyApp myApp = (MyApp) getApplication();
 
                 Log.d("MyApp", "isStop:"+isStop);
-                if (MyApp.isInBackground) {
-                    Log.d("MyApp", "test test");
+                //if (MyApp.isInBackground) {
+                    //Log.d("MyApp", "test test");
 //                    finish();
 //                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
 //                    if (launchIntent != null) {
 //                        startActivity(launchIntent);//null pointer check in case package name was not found
 //                    }
 //                    startActivity(getIntent());
-                }
+               // }
                // myApp.showMessage();
             }
 
@@ -318,6 +352,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
+
+        /*FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+                        String token = task.getResult().getToken();
+
+                        // Log and toast
+                        String msg = getString(R.string.msg_token_fmt, token);
+                        Log.d(TAG, msg);
+                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });*/
     }
 
     @Override
@@ -326,16 +379,29 @@ public class MainActivity extends AppCompatActivity {
 //        getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
     }
 
-    private boolean isStop;
+    public static boolean isStop;
 
     @Override
     protected void onStop() {
         super.onStop();
         isStop = true;
+        MyApp.activityResumed();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("RealTime");
         myRef.setValue(0);
         realTime.setChecked(false);
+        Log.d("MyApp", "onStop:" + isStop);
+        if (!isMyServiceRunning(this, MyFirebaseMessagingService.class)) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(new Intent(this, MyFirebaseMessagingService.class));
+
+            } else {
+                startService(new Intent(this, MyFirebaseMessagingService.class));
+
+            }
+        }
+
 //        getApplicationContext().unregisterReceiver(wifiScanReceiver);
 
 //        new Handler().postDelayed(new Runnable() {
@@ -358,6 +424,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        MyApp.activityPaused();
         isStop=false;
         //realTime.setChecked(true);
         //getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
@@ -379,6 +446,7 @@ public class MainActivity extends AppCompatActivity {
                     off4.setEnabled(true);
                     on5.setEnabled(true);
                     off5.setEnabled(true);
+                    realTime.setEnabled(true);
                     Log.d("thole", "ON");
                     txtTemperature.setEnabled(true);
                     txtHumidity.setEnabled(true);
@@ -393,9 +461,94 @@ public class MainActivity extends AppCompatActivity {
                     off5.setEnabled(false);
                     txtHumidity.setEnabled(false);
                     txtTemperature.setEnabled(false);
+                    realTime.setEnabled(false);
                     Log.d("thole", "OFF");
                 }
             }
         }
     };
+    /*class MyFirebaseMessagingService extends Service {
+
+        private final IBinder binder = new LocalBinder();
+        @Override
+        public IBinder onBind(Intent intent) {
+            return binder;
+        }
+
+        // Class used for the client Binder.
+        public class LocalBinder extends Binder {
+            MyFirebaseMessagingService getService() {
+                // Return this instance of MyService so clients can call public methods
+                return MyFirebaseMessagingService.this;
+            }
+        }
+
+        @Override
+        public void onCreate() {
+            super.onCreate();
+            startMyOwnForeground();
+        }
+
+        @Override
+        public int onStartCommand(Intent intent, int flags, int startId) {
+            Log.d("MyApp", "onStartComd");
+            Firebase myFirebaseRef = new Firebase("https://winged-bliss-237302.firebaseio.com/");
+            myFirebaseRef.child("RealTime").addValueEventListener(new com.firebase.client.ValueEventListener() {
+                @Override
+                public void onDataChange(com.firebase.client.DataSnapshot dataSnapshot) {
+                    Log.d("MyApp", dataSnapshot.getValue().toString());
+                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                    Log.d("MyApp", " BG "  + isStop);
+                    if (launchIntent != null && isStop) {
+                        startActivity(launchIntent);//null pointer check in case package name was not found
+                    }
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    Log.e("The read failed: ", firebaseError.getMessage());
+                }
+            });
+
+
+            return START_STICKY;
+        }
+
+        private void startMyOwnForeground() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                String NOTIFICATION_CHANNEL_ID = this.getPackageName();
+                String channelName = "My Background Service";
+                NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+                chan.setLightColor(Color.BLUE);
+                chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                assert manager != null;
+                manager.createNotificationChannel(chan);
+                // NotificationCompat
+                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+                Notification notification = notificationBuilder.setOngoing(true)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("App is downloading file")
+                        .setPriority(NotificationManager.IMPORTANCE_MIN)
+                        .setCategory(Notification.CATEGORY_SERVICE)
+                        .build();
+                startForeground(2, notification);
+            }
+
+        }
+    }*/
+
+
+
+    public static boolean isMyServiceRunning(Context context, Class<?> serviceClass) {
+        Log.d("MyApp", "isMyServiceRunning ");
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
+
