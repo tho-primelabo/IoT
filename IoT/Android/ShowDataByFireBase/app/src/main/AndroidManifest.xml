@@ -6,27 +6,33 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+
     <application
         android:resizeableActivity="false"
         android:allowBackup="false"
-        android:icon="@mipmap/weather"
+        android:icon="@drawable/weather"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/weather"
+        android:roundIcon="@drawable/weather"
         android:supportsRtl="true"
         android:name="thole.iot.LEDControl.MyApp"
 
         android:theme="@style/AppTheme">
-        <activity android:name="thole.iot.LEDControl.MainActivity"
-            android:showOnLockScreen="true"
-            android:turnScreenOn="true"
-            android:configChanges="orientation|screenSize">
+        <activity android:name="thole.iot.LEDControl.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:showOnLockScreen="true"
+            android:turnScreenOn="true"
+            android:name=".MyDialog"
+            android:theme="@android:style/Theme.Dialog" >
         </activity>
         <service android:name="thole.iot.service.MyFirebaseMessagingService"/>
         <meta-data

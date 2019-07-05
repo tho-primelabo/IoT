@@ -1,51 +1,38 @@
 package thole.iot.LEDControl;
 
 import android.app.ActivityManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.Service;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.icu.text.LocaleDisplayNames;
+
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
-import android.os.Binder;
+
 import android.os.Build;
 import android.os.Handler;
-import android.os.IBinder;
+
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
 import thole.iot.service.MyFirebaseMessagingService;
 
@@ -58,11 +45,11 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference dref;
     private String humidity;
     private String temperature;
-    private TextView status1, status2, status3, status4;
+    private TextView status1, status2, status3, status4, alarmTxt, alarmCbx;
     //private NetworkInfo mWifi;
     private WifiManager wifiManager;
     private IntentFilter intentFilter;
-    private CheckBox realTime;
+    private CheckBox realTime, alarmObj;
     String CONNECTIVITY_CHANGE = "android.net.conn.CONNECTIVITY_CHANGE";
     private String TAG = "MyApp";
     public static NetworkInfo getNetworkInfo(Context context) {
@@ -76,18 +63,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d("MyApp","onCreate");
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            setShowWhenLocked(true);
-            setTurnScreenOn(true);
-        } else {
-            Window window = this.getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-            window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-            window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            window.addFlags(WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
 
-        }
         //FirebaseApp.initializeApp(this);
         setContentView(R.layout.layout2);
 
@@ -95,50 +71,29 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
         ;
-        status1 = (TextView) findViewById(R.id.status1);
-        status2 = (TextView) findViewById(R.id.status2);
-        status3 = (TextView) findViewById(R.id.status3);
-        status4 = (TextView) findViewById(R.id.status4);
-        realTime = (CheckBox) findViewById(R.id.checkBox3);
+        status1 =  findViewById(R.id.status1);
+        status2 =  findViewById(R.id.status2);
+        status3 =  findViewById(R.id.status3);
+        status4 =  findViewById(R.id.status4);
+        realTime =  findViewById(R.id.checkBox3);
+        alarmObj =  findViewById(R.id.alarmCbx);
+        alarmTxt =  findViewById(R.id.alarmObj);
+        alarmCbx =  findViewById(R.id.alarmTxt);
 //        LinearLayout mlayout = new LinearLayout(getApplicationContext());
 //        mlayout.setOrientation(LinearLayout.VERTICAL);
-        on = (Button) findViewById(R.id.on);
-        off = (Button) findViewById(R.id.off);
-        on3 = (Button) findViewById(R.id.on2);
-        off3 = (Button) findViewById(R.id.off2);
-        on4 = (Button) findViewById(R.id.on3);
-        off4 = (Button) findViewById(R.id.off3);
-        on5 = (Button) findViewById(R.id.on4);
-        off5 = (Button) findViewById(R.id.off4);
-        txtHumidity = (TextView) findViewById(R.id.humidity);
-        txtTemperature = (TextView) findViewById(R.id.temperature);
+        on =  findViewById(R.id.on);
+        off = findViewById(R.id.off);
+        on3 =  findViewById(R.id.on2);
+        off3 =  findViewById(R.id.off2);
+        on4 = findViewById(R.id.on3);
+        off4 =  findViewById(R.id.off3);
+        on5 =  findViewById(R.id.on4);
+        off5 =  findViewById(R.id.off4);
+        txtHumidity = findViewById(R.id.humidity);
+        txtTemperature =  findViewById(R.id.temperature);
         dref = FirebaseDatabase.getInstance().getReference();
-        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        //mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-//        dref.child("Humidity").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Log.d("MyApp", "Humidity");
-//                if (dataSnapshot.child("Humidity").getValue() != null) {
-//                    humidity = dataSnapshot.child("Humidity").getValue().toString();
-//                    txtHumidity.setText("Humidity: " + humidity + " %");
-//                    txtHumidity.setTextColor(Color.RED);
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            txtTemperature.setTextColor(Color.DKGRAY);
-//                            txtHumidity.setTextColor(Color.DKGRAY);
-//                        }
-//                    }, 3000);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         dref.child("Temperature").addValueEventListener(new ValueEventListener() {
             @Override
@@ -189,8 +144,28 @@ public class MainActivity extends AppCompatActivity {
                 temperature = dataSnapshot.child("Temperature").getValue().toString();
                 txtTemperature.setText("Temp: " + temperature + (char) 0x00B0 + "C");
                 //txtTemperature.setTextColor(Color.RED);
-
-
+                String pir = dataSnapshot.child("PIR-HC-SR505").getValue().toString();
+                if(pir.equals("1")) {
+                    alarmObj.setChecked(true);
+                    alarmTxt.setTextColor(Color.GREEN);
+                    alarmCbx.setText("ON");
+                }
+                else {
+                    alarmObj.setChecked(false);
+                    alarmTxt.setTextColor(Color.BLACK);
+                    alarmCbx.setText("OFF");
+                }
+                String realTimeV = dataSnapshot.child("RealTime").getValue().toString();
+                if(realTimeV.equals("1")) {
+                    realTime.setChecked(true);
+                   // alarmTxt.setTextColor(Color.GREEN);
+                    //alarmCbx.setText("ON");
+                }
+                else {
+                    realTime.setChecked(false);
+                    //alarmTxt.setTextColor(Color.BLACK);
+                    //alarmCbx.setText("OFF");
+                }
                 //MyApp myApp = (MyApp) getApplication();
 
                 Log.d("MyApp", "isStop:"+isStop);
@@ -351,6 +326,25 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        alarmObj.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("PIR-HC-SR505");
+                if (alarmObj.isChecked()) {
+                    myRef.setValue(1);
+                    alarmTxt.setTextColor(Color.GREEN);
+                    alarmCbx.setText("ON");
+
+                }
+                else {
+                    myRef.setValue(0);
+                    alarmTxt.setTextColor(Color.BLACK);
+                    alarmCbx.setText("OFF");
+                }
+            }
+        });
         getApplicationContext().registerReceiver(wifiScanReceiver, intentFilter);
 
         /*FirebaseInstanceId.getInstance().getInstanceId()
@@ -447,6 +441,7 @@ public class MainActivity extends AppCompatActivity {
                     on5.setEnabled(true);
                     off5.setEnabled(true);
                     realTime.setEnabled(true);
+                    alarmObj.setEnabled(true);
                     Log.d("thole", "ON");
                     txtTemperature.setEnabled(true);
                     txtHumidity.setEnabled(true);
@@ -462,6 +457,7 @@ public class MainActivity extends AppCompatActivity {
                     txtHumidity.setEnabled(false);
                     txtTemperature.setEnabled(false);
                     realTime.setEnabled(false);
+                    alarmObj.setEnabled(false);
                     Log.d("thole", "OFF");
                 }
             }

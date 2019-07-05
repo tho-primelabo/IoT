@@ -7,26 +7,32 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.PowerManager;
-import android.support.annotation.NonNull;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import thole.iot.LEDControl.MainActivity;
-import thole.iot.LEDControl.MyApp;
+import thole.iot.LEDControl.MyDialog;
 import thole.iot.LEDControl.R;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class MyFirebaseMessagingService extends Service {
 
+    private  Vibrator v;
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -40,15 +46,20 @@ public class MyFirebaseMessagingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Firebase myFirebaseRef = new Firebase("https://winged-bliss-237302.firebaseio.com/");
+        final Firebase myFirebaseRef = new Firebase("https://winged-bliss-237302.firebaseio.com/");
         Log.d("MyApp", "onStartCommand");
         myFirebaseRef.child("SR505").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d("MyApp", dataSnapshot.getValue().toString());
-                Intent launchIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                //Intent launchIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                Intent launchIntent=new Intent(MyFirebaseMessagingService.this, MyDialog.class);
+                launchIntent.setFlags(FLAG_ACTIVITY_NEW_TASK);
                 Log.d("MyApp", " BG "  + MainActivity.isStop);
-                if (launchIntent != null && MainActivity.isStop) {
+                if (launchIntent != null && !MyDialog.active) {
+                    DatabaseReference fb = FirebaseDatabase.getInstance().getReference("RealTime");
+                    fb.setValue(0);
+
                    startActivity(launchIntent);//null pointer check in case package name was not found
                 }
             }
@@ -85,5 +96,11 @@ public class MyFirebaseMessagingService extends Service {
             startForeground(2, notification);
         }
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        v.cancel();
     }
 }
